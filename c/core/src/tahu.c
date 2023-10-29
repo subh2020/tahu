@@ -104,7 +104,7 @@ int set_propertyvalue(org_eclipse_tahu_protobuf_Payload_PropertyValue *propertyv
         propertyvalue->value.string_value = strndup(value, size);
         break;
     default:
-        fprintf(stderr, "Invalid datatype(%u) in set_propertyvalue\n", datatype);
+        fprintf(stderr, "Invalid datatype(%lu) in set_propertyvalue\n", datatype);
         return -1;
     }
     return 0;
@@ -226,7 +226,7 @@ int set_metric_value(org_eclipse_tahu_protobuf_Payload_Metric *metric, uint32_t 
     case METRIC_DATA_TYPE_FILE:
     case METRIC_DATA_TYPE_UNKNOWN:
     default:
-        fprintf(stderr, "Unhandled datatype(%u) in set_metric_value\n", datatype);
+        fprintf(stderr, "Unhandled datatype(%lu) in set_metric_value\n", datatype);
         return -1;
     }
     return 0;
@@ -377,7 +377,7 @@ int init_dataset(org_eclipse_tahu_protobuf_Payload_DataSet *dataset,
     const size_t key_size = num_of_columns * sizeof(char *);
     dataset->columns = malloc(key_size);
     if (dataset->columns == NULL) {
-        fprintf(stderr, "malloc(%lu) failure in init_dataset\n", key_size);
+        fprintf(stderr, "malloc(%u) failure in init_dataset\n", key_size);
         return -1;
     }
     for (int i = 0; i < num_of_columns; i++) {
@@ -391,7 +391,7 @@ int init_dataset(org_eclipse_tahu_protobuf_Payload_DataSet *dataset,
     const size_t datatypes_size = num_of_columns * sizeof(uint32_t);
     dataset->types = malloc(datatypes_size);
     if (dataset->types == NULL) {
-        fprintf(stderr, "malloc(%lu) failure in init_dataset\n", datatypes_size);
+        fprintf(stderr, "malloc(%u) failure in init_dataset\n", datatypes_size);
         return -1;
     }
     memcpy(dataset->types, datatypes, datatypes_size);
@@ -399,7 +399,7 @@ int init_dataset(org_eclipse_tahu_protobuf_Payload_DataSet *dataset,
     const size_t row_data_size = num_of_rows * sizeof(org_eclipse_tahu_protobuf_Payload_DataSet_Row);
     dataset->rows = malloc(row_data_size);
     if (dataset->rows == NULL) {
-        fprintf(stderr, "malloc(%lu) failure in init_dataset\n", row_data_size);
+        fprintf(stderr, "malloc(%d) failure in init_dataset\n", row_data_size);
         return -1;
     }
     memcpy(dataset->rows, row_data, row_data_size);
@@ -480,10 +480,10 @@ void print_metadata(const char *prefix, org_eclipse_tahu_protobuf_Payload_MetaDa
         PP("%scontent_type=%s [%p]\n", prefix, metadata->content_type, metadata->content_type);
     }
     if (metadata->has_size) {
-        PP("%shas_size=%lu\n", prefix, metadata->size);
+        PP("%shas_size=%llu\n", prefix, metadata->size);
     }
     if (metadata->has_seq) {
-        PP("%sseq=%lu\n", prefix, metadata->seq);
+        PP("%sseq=%llu\n", prefix, metadata->seq);
     }
     if (metadata->file_name != NULL) {
         PP("%sfile_name=%s [%p]\n", prefix, metadata->file_name, metadata->file_name);
@@ -508,17 +508,17 @@ void print_propertyvalue(const char *prefix, org_eclipse_tahu_protobuf_Payload_P
         prefix = EMPTY_PREFIX;
     }
     if (value->has_type) {
-        PP("%stype=%u\n", prefix, value->type);
+        PP("%stype=%lu\n", prefix, value->type);
     }
     if (value->has_is_null) {
         PP("%sis_null=%u\n", prefix, value->is_null);
     }
     switch (value->which_value) {
     case org_eclipse_tahu_protobuf_Payload_PropertyValue_int_value_tag:
-        PP("%sint_value=%d\n", prefix, value->value.int_value);
+        PP("%sint_value=%ld\n", prefix, value->value.int_value);
         break;
     case org_eclipse_tahu_protobuf_Payload_PropertyValue_long_value_tag:
-        PP("%slong_value=%ld\n", prefix, value->value.long_value);
+        PP("%slong_value=%lld\n", prefix, value->value.long_value);
         break;
     case org_eclipse_tahu_protobuf_Payload_PropertyValue_float_value_tag:
         PP("%sfloat_value=%f\n", prefix, value->value.float_value);
@@ -544,7 +544,7 @@ void print_propertyvalue(const char *prefix, org_eclipse_tahu_protobuf_Payload_P
         PP("%sextension_value=[%p] (display not supported)\n", prefix, value->value.extension_value.extensions);
         break;
     default:
-        PP("%sinvalid which_value=%u\n", prefix, value->which_value);
+        PP("%sinvalid which_value=%lu\n", prefix, value->which_value);
     }
 }
 
@@ -553,11 +553,11 @@ void print_propertyset(const char *prefix, org_eclipse_tahu_protobuf_Payload_Pro
     if (prefix == NULL) {
         prefix = EMPTY_PREFIX;
     }
-    PP("%skeys=[%p] (count=%u)\n", prefix, properties->keys, properties->keys_count);
+    PP("%skeys=[%p] (count=%lu)\n", prefix, properties->keys, properties->keys_count);
     for (int i = 0; i < properties->keys_count; i++) {
         PP("%s keys[%u]=%s [%p]\n", prefix, i, properties->keys[i], properties->keys[i]);
     }
-    PP("%svalues=[%p] (count=%u)\n", prefix, properties->values, properties->values_count);
+    PP("%svalues=[%p] (count=%lu)\n", prefix, properties->values, properties->values_count);
     for (int i = 0; i < properties->values_count; i++) {
         snprintf(temp, sizeof(temp), "%svalues[%u].", prefix, i);
         print_propertyvalue(temp, &properties->values[i]);
@@ -574,7 +574,7 @@ void print_propertysetlist(const char *prefix, org_eclipse_tahu_protobuf_Payload
     }
     // pb_size_t propertyset_count;
     // struct _org_eclipse_tahu_protobuf_Payload_PropertySet *propertyset;
-    PP("%spropertyset=[%p] (count=%u)\n", prefix, propertysetlist->propertyset, propertysetlist->propertyset_count);
+    PP("%spropertyset=[%p] (count=%lu)\n", prefix, propertysetlist->propertyset, propertysetlist->propertyset_count);
     for (int i = 0; i < propertysetlist->propertyset_count; i++) {
         snprintf(temp, sizeof(temp), "%s.propertyset[%u].", prefix, i);
         print_propertyset(temp, &propertysetlist->propertyset[i]);
@@ -589,7 +589,7 @@ void print_dataset_row(const char *prefix, org_eclipse_tahu_protobuf_Payload_Dat
     if (prefix == NULL) {
         prefix = EMPTY_PREFIX;
     }
-    PP("%selements=[%p] (count=%u)\n", prefix, row->elements, row->elements_count);
+    PP("%selements=[%p] (count=%lu)\n", prefix, row->elements, row->elements_count);
     for (int i = 0; i < row->elements_count; i++) {
         snprintf(temp, sizeof(temp), "%selements[%u].", prefix, i);
         print_datasetvalue(temp, &row->elements[i]);
@@ -602,10 +602,10 @@ void print_dataset_row(const char *prefix, org_eclipse_tahu_protobuf_Payload_Dat
 void print_datasetvalue(const char *prefix, org_eclipse_tahu_protobuf_Payload_DataSet_DataSetValue *dsvalue) {
     switch (dsvalue->which_value) {
     case org_eclipse_tahu_protobuf_Payload_DataSet_DataSetValue_int_value_tag:
-        PP("%sint_value=%d\n", prefix, dsvalue->value.int_value);
+        PP("%sint_value=%ld\n", prefix, dsvalue->value.int_value);
         break;
     case org_eclipse_tahu_protobuf_Payload_DataSet_DataSetValue_long_value_tag:
-        PP("%slong_value=%ld\n", prefix, dsvalue->value.long_value);
+        PP("%slong_value=%lld\n", prefix, dsvalue->value.long_value);
         break;
     case org_eclipse_tahu_protobuf_Payload_DataSet_DataSetValue_float_value_tag:
         PP("%sfloat_value=%f\n", prefix, dsvalue->value.float_value);
@@ -623,7 +623,7 @@ void print_datasetvalue(const char *prefix, org_eclipse_tahu_protobuf_Payload_Da
         PP("%sextension_value=[%p] (display not supported)\n", prefix, dsvalue->value.extension_value.extensions);
         break;
     default:
-        PP("%sinvalid which_value=%u\n", prefix, dsvalue->which_value);
+        PP("%sinvalid which_value=%lu\n", prefix, dsvalue->which_value);
     }
 }
 
@@ -633,17 +633,17 @@ void print_dataset(const char *prefix, org_eclipse_tahu_protobuf_Payload_DataSet
         prefix = EMPTY_PREFIX;
     }
     if (dataset_value->has_num_of_columns) {
-        PP("%snum_of_columns=%lu\n", prefix, dataset_value->num_of_columns);
+        PP("%snum_of_columns=%llu\n", prefix, dataset_value->num_of_columns);
     }
-    PP("%scolumns=[%p] (count=%u)\n", prefix, dataset_value->columns, dataset_value->columns_count);
+    PP("%scolumns=[%p] (count=%lu)\n", prefix, dataset_value->columns, dataset_value->columns_count);
     for (int i = 0; i < dataset_value->columns_count; i++) {
         PP("%scolumn[%u]=%s [%p]\n", prefix, i, dataset_value->columns[i], dataset_value->columns[i]);
     }
-    PP("%stypes=[%p] (count=%u)\n", prefix, dataset_value->types, dataset_value->types_count);
+    PP("%stypes=[%p] (count=%lu)\n", prefix, dataset_value->types, dataset_value->types_count);
     for (int i = 0; i < dataset_value->types_count; i++) {
-        PP("%stype[%u]=%u\n", prefix, i, dataset_value->types[i]);
+        PP("%stype[%u]=%lu\n", prefix, i, dataset_value->types[i]);
     }
-    PP("%srows=[%p] (count=%u)\n", prefix, dataset_value->rows, dataset_value->rows_count);
+    PP("%srows=[%p] (count=%lu)\n", prefix, dataset_value->rows, dataset_value->rows_count);
     for (int i = 0; i < dataset_value->rows_count; i++) {
         snprintf(temp, sizeof(temp), "%srow[%u].", prefix, i);
         print_dataset_row(temp, &dataset_value->rows[i]);
@@ -662,15 +662,15 @@ void print_template_parameter(const char *prefix, org_eclipse_tahu_protobuf_Payl
         PP("%sname=%s [%p]\n", prefix, template_parameter->name, template_parameter->name);
     }
     if (template_parameter->has_type) {
-        PP("%stype=%u\n", prefix, template_parameter->type);
+        PP("%stype=%lu\n", prefix, template_parameter->type);
     }
     // pb_size_t which_value;
     switch (template_parameter->which_value) {
     case org_eclipse_tahu_protobuf_Payload_Template_Parameter_int_value_tag:
-        PP("%sint_value=%d\n", prefix, template_parameter->value.int_value);
+        PP("%sint_value=%ld\n", prefix, template_parameter->value.int_value);
         break;
     case org_eclipse_tahu_protobuf_Payload_Template_Parameter_long_value_tag:
-        PP("%slong_value=%ld\n", prefix, template_parameter->value.long_value);
+        PP("%slong_value=%lld\n", prefix, template_parameter->value.long_value);
         break;
     case org_eclipse_tahu_protobuf_Payload_Template_Parameter_float_value_tag:
         PP("%sfloat_value=%f\n", prefix, template_parameter->value.float_value);
@@ -688,7 +688,7 @@ void print_template_parameter(const char *prefix, org_eclipse_tahu_protobuf_Payl
         PP("%sextension_value=[%p] (display not supported)\n", prefix, template_parameter->value.extension_value.extensions);
         break;
     default:
-        PP("%sinvalid which_value=%u\n", prefix, template_parameter->which_value);
+        PP("%sinvalid which_value=%lu\n", prefix, template_parameter->which_value);
     }
 }
 
@@ -700,12 +700,12 @@ void print_template(const char *prefix, org_eclipse_tahu_protobuf_Payload_Templa
     if (template->version != NULL) {
         PP("%sversion=%s [%p]\n", prefix, template->version, template->version);
     }
-    PP("%smetrics=[%p] (count=%u)\n", prefix, template->metrics, template->metrics_count);
+    PP("%smetrics=[%p] (count=%lu)\n", prefix, template->metrics, template->metrics_count);
     for (int i = 0; i < template->metrics_count; i++) {
         snprintf(temp, sizeof(temp), "%smetric[%u].", prefix, i);
         print_metric(temp, &template->metrics[i]);
     }
-    PP("%sparameters=[%p] (count=%u)\n", prefix, template->parameters, template->parameters_count);
+    PP("%sparameters=[%p] (count=%lu)\n", prefix, template->parameters, template->parameters_count);
     for (int i = 0; i < template->parameters_count; i++) {
         snprintf(temp, sizeof(temp), "%sparameter[%u].", prefix, i);
         print_template_parameter(temp, &template->parameters[i]);
@@ -730,13 +730,13 @@ void print_metric(const char *prefix, org_eclipse_tahu_protobuf_Payload_Metric *
         PP("%sname=%s [%p]\n", prefix, metric->name, metric->name);
     }
     if (metric->has_alias) {
-        PP("%salias=%ld\n", prefix, metric->alias);
+        PP("%salias=%lld\n", prefix, metric->alias);
     }
     if (metric->has_timestamp) {
-        PP("%stimestamp=%ld\n", prefix, metric->timestamp);
+        PP("%stimestamp=%lld\n", prefix, metric->timestamp);
     }
     if (metric->has_datatype) {
-        PP("%sdatatype=%u\n", prefix, metric->datatype);
+        PP("%sdatatype=%lu\n", prefix, metric->datatype);
     }
     if (metric->has_is_historical) {
         PP("%sis_historical=%u\n", prefix, metric->is_historical);
@@ -757,10 +757,10 @@ void print_metric(const char *prefix, org_eclipse_tahu_protobuf_Payload_Metric *
     }
     switch (metric->which_value) {
     case org_eclipse_tahu_protobuf_Payload_Metric_int_value_tag:
-        PP("%sint_value=%d\n", prefix, metric->value.int_value);
+        PP("%sint_value=%ld\n", prefix, metric->value.int_value);
         break;
     case org_eclipse_tahu_protobuf_Payload_Metric_long_value_tag:
-        PP("%slong_value=%ld\n", prefix, metric->value.long_value);
+        PP("%slong_value=%lld\n", prefix, metric->value.long_value);
         break;
     case org_eclipse_tahu_protobuf_Payload_Metric_float_value_tag:
         PP("%sfloat_value=%f\n", prefix, metric->value.float_value);
@@ -789,7 +789,7 @@ void print_metric(const char *prefix, org_eclipse_tahu_protobuf_Payload_Metric *
         PP("%sextension_value=[%p] (display not supported)\n", prefix, metric->value.extension_value.extensions);
         break;
     default:
-        PP("%sinvalid which_type=%u", prefix, metric->which_value);
+        PP("%sinvalid which_type=%lu", prefix, metric->which_value);
         break;
     }
 }
@@ -798,10 +798,10 @@ void print_payload(org_eclipse_tahu_protobuf_Payload *payload) {
     char temp[64];
     PP("-----PAYLOAD BEGIN-----\n");
     if (payload->has_timestamp) {
-        PP("timestamp=%ld\n", payload->timestamp);
+        PP("timestamp=%lld\n", payload->timestamp);
     }
     if (payload->has_seq) {
-        PP("seq=%ld\n", payload->seq);
+        PP("seq=%lld\n", payload->seq);
     }
     if (payload->uuid != NULL) {
         PP("uuid=%s [%p]\n", payload->uuid, payload->uuid);
@@ -812,7 +812,7 @@ void print_payload(org_eclipse_tahu_protobuf_Payload *payload) {
     if (payload->extensions != NULL) {
         PP("extensions=[%p] (display not supported)\n", payload->extensions);
     }
-    PP("metrics=[%p] (count=%u)\n", payload->metrics, payload->metrics_count);
+    PP("metrics=[%p] (count=%lu)\n", payload->metrics, payload->metrics_count);
     for (int i = 0; i < payload->metrics_count; i++) {
         snprintf(temp, sizeof(temp), "metric[%u].", i);
         print_metric(temp, &payload->metrics[i]);
